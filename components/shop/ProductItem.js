@@ -5,14 +5,14 @@ import Colors from '../../constants/Colors'
 
 const ProductItem = props => {
     return (
-        // <TouchableNativeFeedback onPress={props.onPressDetail}>
         <View style={styles.item}>
                 <Image style={styles.proImg} source={{uri: props.image}} />
             <View style={styles.infoCont}>
                 <Text style={styles.title}>{props.title}</Text>
-                <Text style={styles.price}>$ {props.price.toFixed(2)}</Text>
-                <Button color={Colors.secondary} style={styles.btn} title="Details" onPress={props.onPressDetail}/>
-                <Button color={Colors.secondary} style={styles.btn} title="Add to Cart"onPress={props.onPressAddCart}/>
+                <Text style={styles.price}>$ {props.price}</Text>
+                <View style={styles.btnCont}>
+                    {props.children}
+                </View>
             </View>
         </View>
     )
@@ -37,20 +37,21 @@ const styles = StyleSheet.create({
         height: '100%'
     },
     title: {
-        fontSize: 20,
-        marginVertical: 10
+        fontSize: 15,
+        marginVertical: 5
     },
     price: {
-        fontSize: 15,
-        marginVertical: 10,
+        fontSize: 10,
+        marginVertical: 5,
         color: '#888'
-    },
-    btn: {
-        margin: 5,
     },
     infoCont: {
         flex: 1,
         alignItems: 'center',
+        justifyContent: 'space-around'
+    },
+    btnCont: {
+        flex: 1,
         justifyContent: 'space-around'
     }
 

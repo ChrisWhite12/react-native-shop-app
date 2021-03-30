@@ -1,24 +1,23 @@
 import React from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
-import { ceil } from "react-native-reanimated";
+import { View, Text, StyleSheet, FlatList, Button } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import ProductItem from "../../components/shop/ProductItem";
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import HeaderButton from '../../components/UI/HeaderButton'
 
 import * as cartActions from '../../store/actions/cart'
+import Colors from "../../constants/Colors";
 
 const ProductsOverviewScreen = (props) => {
     const productData = useSelector((state) => state.products.availProducts);
     const dispatch = useDispatch()
 
-    // const handleDetailNav = (id) => {
-    //     props.navigation.navigate({routeName: 'ProductDetail', productId: id })
-    // }
-
-    // const handleCartAdd = (id) => {
-    //     console.log(id)
-    // }
+    const handleDetailPress = (id, title) => {
+        props.navigation.navigate("ProductDetail", {
+            productId: id,
+            productTitle: title
+        })
+    }
 
     return (
         <View style={styles.screen}>
@@ -30,16 +29,18 @@ const ProductsOverviewScreen = (props) => {
                 title={itemData.item.title}
                 image={itemData.item.imageUrl}
                 price={itemData.item.price}
-                onPressDetail={() => {
-                props.navigation.navigate("ProductDetail", {
-                    productId: itemData.item.id,
-                    productTitle: itemData.item.title
-                });
-                }}
-                onPressAddCart={() => {
-                    dispatch(cartActions.addToCart(itemData.item));
-                }}
-            />
+            > 
+            
+                <Button color={Colors.secondary} style={styles.btn} title="Details" onPress={() => {
+                    handleDetailPress(itemData.item.id, itemData.item.title)
+                    }
+                }/>
+                <Button color={Colors.secondary} style={styles.btn} title="Add to Cart" onPress={() => {
+                    dispatch(cartActions.addToCart(itemData.item))
+                    }
+                }/>
+
+            </ProductItem>
             )}
         />
         </View>
@@ -76,6 +77,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         width: "100%",
     },
+    btn: {
+        margin: 10
+    }
 });
 
 export default ProductsOverviewScreen;

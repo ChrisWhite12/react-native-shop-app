@@ -54,7 +54,7 @@ const CartScreen = (props) => {
         </View>
         <View style={styles.summaryCont}>
             <Text style={styles.totalText}>
-            Total: $<Text>{cartTotal.toFixed(2)}</Text>
+            Total: $<Text>{Math.round(cartTotal.toFixed(2)* 100) / 100}</Text>          
             </Text>
             <Button
             title="Order Now"
