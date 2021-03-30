@@ -3,6 +3,8 @@ import { View, Text, StyleSheet, FlatList } from "react-native";
 import { ceil } from "react-native-reanimated";
 import { useSelector, useDispatch } from "react-redux";
 import ProductItem from "../../components/shop/ProductItem";
+import { HeaderButtons, Item } from 'react-navigation-header-buttons'
+import HeaderButton from '../../components/UI/HeaderButton'
 
 import * as cartActions from '../../store/actions/cart'
 
@@ -44,8 +46,20 @@ const ProductsOverviewScreen = (props) => {
     );
 };
 
-ProductsOverviewScreen.navigationOptions = {
-    headerTitle: "All Products",
+ProductsOverviewScreen.navigationOptions = navData => {
+    return {
+        headerTitle: "All Products",
+        headerRight: () => <HeaderButtons HeaderButtonComponent={HeaderButton}>
+            <Item title='Cart' iconName={'md-cart'} onPress={() => {
+                navData.navigation.navigate("CartList")
+            }} />
+        </HeaderButtons>,
+        headerLeft: () => <HeaderButtons HeaderButtonComponent={HeaderButton}>
+            <Item title='menu' iconName={'md-menu'} onPress={() => {
+                navData.navigation.toggleDrawer()
+            }} />
+        </HeaderButtons>
+    }
 };
 
 const styles = StyleSheet.create({
