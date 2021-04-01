@@ -3,12 +3,18 @@ import Product from "../../models/product";
 import {
     CREATE_PRODUCT,
     DELETE_PRODUCT,
+    SET_PRODUCTS,
     UPDATE_PRODUCT,
 } from "../actions/products";
 
+// const initState = {
+//     availProducts: PRODUCTS,
+//     userProducts: PRODUCTS.filter((prod) => prod.ownerId === "u1"),
+// };
+
 const initState = {
-    availProducts: PRODUCTS,
-    userProducts: PRODUCTS.filter((prod) => prod.ownerId === "u1"),
+    availProducts: [],
+    userProducts: [],
 };
 
 export default (state = initState, action) => {
@@ -25,7 +31,7 @@ export default (state = initState, action) => {
         };
         case CREATE_PRODUCT:
         const newProd = new Product(
-            new Date().toString(),
+            action.productData.id,
             "u1",
             action.productData.title,
             action.productData.imageUrl,
@@ -64,6 +70,13 @@ export default (state = initState, action) => {
             availProducts: updatedAvailProducts,
             userProducts: updatedUserProducts
         }
+
+        case SET_PRODUCTS:
+        return {
+            availProducts: action.products,
+            userProducts: action.products.filter((prod) => prod.ownerId === "u1")
+        }
+
 
         default:
         return state;

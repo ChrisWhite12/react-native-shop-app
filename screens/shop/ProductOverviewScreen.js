@@ -1,22 +1,57 @@
-import React from "react";
-import { View, Text, StyleSheet, FlatList, Button } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, StyleSheet, FlatList, Button, ActivityIndicator } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import ProductItem from "../../components/shop/ProductItem";
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import HeaderButton from '../../components/UI/HeaderButton'
 
 import * as cartActions from '../../store/actions/cart'
+import * as productActions from '../../store/actions/products'
 import Colors from "../../constants/Colors";
 
 const ProductsOverviewScreen = (props) => {
     const productData = useSelector((state) => state.products.availProducts);
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(false)
     const dispatch = useDispatch()
+
+    useEffect(() => {
+        setLoading(true)
+        dispatch(productActions.fetchProducts())
+        .then(setLoading(false))
+        .catch(err => {
+            console.log(err)
+            setError(err.message)
+        })
+    },[dispatch])
 
     const handleDetailPress = (id, title) => {
         props.navigation.navigate("ProductDetail", {
             productId: id,
             productTitle: title
         })
+    }
+
+    if (error){
+        return (
+            <View style={styles.screen}>
+                <Text>Error</Text>
+            </View>
+        )
+    }
+
+    if (loading === true){
+        return (
+            <View style={styles.screen}>
+                <ActivityIndicator size='large' color={Colors.primary}/>
+            </View>
+        )
+    }
+
+    if(loading === false && productData.length === 0){
+        <View style={styles.screen}>
+            <Text>No Products</Text>
+        </View>
     }
 
     return (
