@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Button, ActivityIndicator } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import ProductItem from "../../components/shop/ProductItem";
@@ -11,19 +11,37 @@ import Colors from "../../constants/Colors";
 
 const ProductsOverviewScreen = (props) => {
     const productData = useSelector((state) => state.products.availProducts);
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(false)
+    const [refreshing, setRefreshing] = useState(false)
     const [error, setError] = useState(false)
     const dispatch = useDispatch()
 
     useEffect(() => {
-        setLoading(true)
+        const productsSub = props.navigation.addListener('willFocus', loadProducts)
+        
+        return () => {
+            productsSub.remove()
+        }
+    },[loadProducts])
+
+    const loadProducts = useCallback(async() => {
+        setRefreshing(true)
         dispatch(productActions.fetchProducts())
-        .then(setLoading(false))
         .catch(err => {
             console.log(err)
             setError(err.message)
         })
-    },[dispatch])
+        setRefreshing(false)
+    },[dispatch, setError, setLoading])
+
+    useEffect(() => {
+        setLoading(true)
+        loadProducts()
+        .then(() => {
+            setLoading(false)
+        })
+    },[dispatch,loadProducts])
+
 
     const handleDetailPress = (id, title) => {
         props.navigation.navigate("ProductDetail", {
@@ -57,6 +75,8 @@ const ProductsOverviewScreen = (props) => {
     return (
         <View style={styles.screen}>
         <FlatList
+            onRefresh={loadProducts}
+            refreshing={refreshing}
             style={styles.flat1}
             data={productData}
             renderItem={(itemData) => (

@@ -24,7 +24,17 @@ export const fetchProducts = () => {
 }
 
 export const deleteProduct = productId => {
-    return { type: DELETE_PRODUCT, pid: productId }
+    return async dispatch => {
+        const response = await fetch(`https://shpo-app-default-rtdb.firebaseio.com/products/${productId}.json`, {
+            method: 'DELETE'
+        })
+
+        if(!response.ok){
+            throw new Error('Response not OK')
+        }
+
+        dispatch({ type: DELETE_PRODUCT, pid: productId })
+    } 
 }
 
 export const createProduct = (title, description, price, imageUrl) => {
@@ -37,6 +47,10 @@ export const createProduct = (title, description, price, imageUrl) => {
             body: JSON.stringify({title, description, imageUrl, price})
         })
         const resData = await response.json()
+
+        if(!response.ok){
+            throw new Error('Response not OK')
+        }
 
         console.log(resData)
 
@@ -54,11 +68,27 @@ export const createProduct = (title, description, price, imageUrl) => {
 }
 
 export const updateProduct = (id, title, description, imageUrl) => {
-    return { type: UPDATE_PRODUCT,
-        pid: id,
-        productData: {
-            title,
-            description,
-            imageUrl
+    return async dispatch => {
+        const response = await fetch(`https://shpo-app-default-rtdb.firebaseio.com/products/${id}.json`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({title, description, imageUrl})
+        })
+
+        if(!response.ok){
+            throw new Error('Response not OK')
         }
-}}
+
+        dispatch({ 
+            type: UPDATE_PRODUCT,
+            pid: id,
+            productData: {
+                title,
+                description,
+                imageUrl
+            }
+        })
+    }
+}

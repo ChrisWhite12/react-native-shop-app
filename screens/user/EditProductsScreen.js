@@ -7,12 +7,14 @@ import {
     TextInput,
     Alert,
     KeyboardAvoidingView,
+    ActivityIndicator
 } from "react-native";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { useDispatch, useSelector } from "react-redux";
 import FormInput from "../../components/UI/FormInput";
 
 import HeaderButton from "../../components/UI/HeaderButton";
+import Colors from "../../constants/Colors";
 
 import * as productActions from "../../store/actions/products";
 
@@ -45,6 +47,8 @@ const formReducer = (state, action) => {
 
 
 const EditProductsScreen = (props) => {
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState()
     const prodId = props.navigation.getParam("productId");
     const editedProduct = useSelector(state =>
         state.products.userProducts.find(prod => prod.id === prodId)
@@ -67,32 +71,40 @@ const EditProductsScreen = (props) => {
         formIsValid: editedProduct ? true : false,
     })
 
-    const handleSubmit = useCallback(() => {
+    const handleSubmit = useCallback( async () => {
         if(!formState.formIsValid){
             Alert.alert('Wrong input', 'Enter valid information', [{text: 'OK'}])
             return
         }
 
-        if (editedProduct) {
-            dispatch(
-                productActions.updateProduct(
-                    prodId, 
-                    formState.inputValues.title, 
-                    formState.inputValues.description, 
-                    formState.inputValues.imageUrl
-                )
-            );
-        } else {
-            dispatch(
-                productActions.createProduct(
-                    formState.inputValues.title, 
-                    formState.inputValues.description, 
-                    +formState.inputValues.price, 
-                    formState.inputValues.imageUrl
-                )
-            );
+        setError(null)
+        setLoading(true)
+        try{
+            if (editedProduct) {
+                await dispatch(
+                    productActions.updateProduct(
+                        prodId, 
+                        formState.inputValues.title, 
+                        formState.inputValues.description, 
+                        formState.inputValues.imageUrl
+                    )
+                );
+            } else {
+                await dispatch(
+                    productActions.createProduct(
+                        formState.inputValues.title, 
+                        formState.inputValues.description, 
+                        +formState.inputValues.price, 
+                        formState.inputValues.imageUrl
+                    )
+                );
+            }
+            props.navigation.goBack();
         }
-        props.navigation.goBack();
+        catch (err){
+            setError(err.message)
+        }
+        setLoading(false)
     }, [dispatch, prodId, formState]);
 
     const handleInputChange = useCallback(( inputIdentity, inputValue, inputValid ) => {
@@ -108,8 +120,22 @@ const EditProductsScreen = (props) => {
         props.navigation.setParams({ submit: handleSubmit });
     }, [handleSubmit])
 
+    useEffect(() => {
+        if(error){
+            Alert.alert('Something went wrong!', error, [{text: 'Okay'}])
+        }
+    },[error])
+
+    if (loading === true){
+        return (
+            <View style={styles.screen}>
+                <ActivityIndicator size='large' color={Colors.primary}/>
+            </View>
+        )
+    }
+
     return (
-        <KeyboardAvoidingView style={{flex: 1}} behavior='padding' keyboardVerticalOffset={150}>
+        <KeyboardAvoidingView style={{flex: 1}} keyboardVerticalOffset={50}>
             <ScrollView>
             <View style={styles.form}>
                 <FormInput
@@ -189,11 +215,12 @@ EditProductsScreen.navigationOptions = (navData) => {
     },
     form: {
         width: "100%",
+        height: '100%',
         borderRadius: 5,
         borderWidth: 1,
         borderColor: "#ccc",
         padding: 10,
-    },
+    }
 });
 
 export default EditProductsScreen;

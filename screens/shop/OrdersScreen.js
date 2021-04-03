@@ -1,14 +1,21 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { FlatList } from 'react-native-gesture-handler'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { HeaderButtons, Item } from 'react-navigation-header-buttons'
 import HeaderButton from '../../components/UI/HeaderButton'
 import OrderItem from '../../components/shop/OrderItem'
+import * as ordersActions from '../../store/actions/orders'
 
 const OrdersScreen = props => {
     const orders = useSelector(state => state.orders.orders)
     // console.log(orders)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(ordersActions.fetchOrders())
+    },[dispatch])
+
     return (
         <FlatList 
             data={orders} 
