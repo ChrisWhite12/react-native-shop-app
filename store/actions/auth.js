@@ -2,7 +2,7 @@ export const SIGNUP = 'SIGNUP'
 export const LOGIN = 'LOGIN'
 
 
-import { PROJECT_API_KEY } from 'react-native-dotenv'
+import { PROJECT_API_KEY } from '@env'
 
 export const signup = (email,password) => {
     return async dispatch => {

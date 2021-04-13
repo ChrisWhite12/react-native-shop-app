@@ -17,7 +17,7 @@ import FormInput from "../../components/UI/FormInput";
 import Colors from "../../constants/Colors";
 import * as authActions from '../../store/actions/auth'
 
-import { PROJECT_API_KEY } from 'react-native-dotenv'
+
 
 const FORM_UPDATE = 'FORM_UPDATE'
 
@@ -161,7 +161,6 @@ const AuthScreen = (props) => {
                             }} />
                         </View>}
                     </ScrollView>
-                    <Text>{PROJECT_API_KEY}</Text>
                 </View>
             </LinearGradient>
         </KeyboardAvoidingView>
