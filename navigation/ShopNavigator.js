@@ -1,8 +1,9 @@
 import React from 'react'
 
-import { createAppContainer } from 'react-navigation'
+import { createAppContainer, createSwitchNavigator } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
 import { createDrawerNavigator } from 'react-navigation-drawer'
+
 
 import Colors from '../constants/Colors'
 
@@ -15,6 +16,7 @@ import UserProductsScreen from '../screens/user/UserProductsScreen'
 
 import { Ionicons } from '@expo/vector-icons'
 import EditProductsScreen from '../screens/user/EditProductsScreen'
+import AuthScreen from '../screens/user/AuthScreen'
 
 const defaultNavOptions = {
     headerStyle: {
@@ -65,10 +67,24 @@ const AdminNavigator = createStackNavigator({
     defaultNavigationOptions: defaultNavOptions
 })
 
+const AuthNavigator = createStackNavigator({
+    Auth: AuthScreen
+},{
+    defaultNavigationOptions: defaultNavOptions
+}
+)
+
 const ShopNavigator = createDrawerNavigator({
     Products: ProductsNavigator,
     Orders: OrdersNavigator,
     Admin: AdminNavigator
 })
 
-export default createAppContainer(ShopNavigator)
+const MainNavigator = createSwitchNavigator({
+    Auth: AuthNavigator,
+    Shop: ShopNavigator
+})
+
+
+
+export default createAppContainer(MainNavigator)

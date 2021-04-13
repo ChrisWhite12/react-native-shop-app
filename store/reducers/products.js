@@ -32,7 +32,7 @@ export default (state = initState, action) => {
         case CREATE_PRODUCT:
         const newProd = new Product(
             action.productData.id,
-            "u1",
+            action.productData.ownerId,
             action.productData.title,
             action.productData.imageUrl,
             action.productData.description,
@@ -74,7 +74,7 @@ export default (state = initState, action) => {
         case SET_PRODUCTS:
         return {
             availProducts: action.products,
-            userProducts: action.products.filter((prod) => prod.ownerId === "u1")
+            userProducts: action.userProducts
         }
 
 

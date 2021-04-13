@@ -6,7 +6,8 @@ export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
 export const SET_PRODUCTS = 'SET_PRODUCTS'
 
 export const fetchProducts = () => {
-    return async dispatch => {
+    return async (dispatch, getState) => {
+        const userId = getState().auth.userId
         const response = await fetch('https://shpo-app-default-rtdb.firebaseio.com/products.json')
         const resData = await response.json()
         const resOut = []
@@ -16,16 +17,17 @@ export const fetchProducts = () => {
         }
 
         for (const key in resData){
-            resOut.push(new Product(key, 'u1', resData[key].title, resData[key].imageUrl, resData[key].description, resData[key].price))
+            resOut.push(new Product(key, resData[key].ownerId, resData[key].title, resData[key].imageUrl, resData[key].description, resData[key].price))
         }
         console.log(resData)
-        dispatch({type: SET_PRODUCTS, products: resOut})
+        dispatch({type: SET_PRODUCTS, products: resOut, userProducts: resOut.filter(item => item.ownerId === userId)})
     }
 }
 
 export const deleteProduct = productId => {
-    return async dispatch => {
-        const response = await fetch(`https://shpo-app-default-rtdb.firebaseio.com/products/${productId}.json`, {
+    return async (dispatch, getState) => {
+        const token = getState().auth.token
+        const response = await fetch(`https://shpo-app-default-rtdb.firebaseio.com/products/${productId}.json?auth=${token}`, {
             method: 'DELETE'
         })
 
@@ -38,13 +40,15 @@ export const deleteProduct = productId => {
 }
 
 export const createProduct = (title, description, price, imageUrl) => {
-    return async dispatch => {
-        const response = await fetch('https://shpo-app-default-rtdb.firebaseio.com/products.json', {
+    return async (dispatch, getState) => {
+        const token = getState().auth.token
+        const userId = getState().auth.userId
+        const response = await fetch(`https://shpo-app-default-rtdb.firebaseio.com/products.json?auth=${token}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({title, description, imageUrl, price})
+            body: JSON.stringify({title, description, imageUrl, price, ownerId: userId})
         })
         const resData = await response.json()
 
@@ -61,15 +65,17 @@ export const createProduct = (title, description, price, imageUrl) => {
                 title,
                 description,
                 price,
-                imageUrl
+                imageUrl,
+                ownerId: userId
             }
         })
     }
 }
 
 export const updateProduct = (id, title, description, imageUrl) => {
-    return async dispatch => {
-        const response = await fetch(`https://shpo-app-default-rtdb.firebaseio.com/products/${id}.json`, {
+    return async (dispatch, getState) => {
+        const token = getState().auth.token
+        const response = await fetch(`https://shpo-app-default-rtdb.firebaseio.com/products/${id}.json?auth=${token}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json'
